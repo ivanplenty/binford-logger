@@ -1,6 +1,6 @@
 {
   "name": "binford-logger",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Ivan Plenty <ivanplenty@gmail.com>",
   "description": "A bare-bones log4j-like logger",
   "main": "./index.js",
