@@ -16,15 +16,15 @@ describe('Logger', function(){
 
 		l.addAppender(testAppender, null, 5);
 
-		l.error("first error");
+		l.error("error: should see me");
 		testAppender.countEntries().should.be.eql(1);
-		l.warn("second msg");
+		l.warn("warn: should see me");
 		testAppender.countEntries().should.be.eql(2);
-		l.info("third msg");
+		l.info("info: should see me");
 		testAppender.countEntries().should.be.eql(3);
-		l.debug("fourth msg");
+		l.debug("debug: should NOT see me");
 		testAppender.countEntries().should.be.eql(3);
-		l.trace("fifth msg");
+		l.trace("trace: should NOT see me");
 		testAppender.countEntries().should.be.eql(3);
 	});
 
@@ -38,11 +38,11 @@ describe('Logger', function(){
 
 		l.addAppender(consoleAppender, null, 5);
 
-		l.error("first error");
-		l.warn("second msg");
-		l.info("third msg");
-		l.debug("fourth msg");
-		l.trace("fifth msg");
+		l.error("error: should see me");
+		l.warn("warn: should see me");
+		l.info("info: should see me");
+		l.debug("debug: should see me");
+		l.trace("trace: should see me");
 	});
 
 	it('should append to the color console logger', function(){
@@ -55,11 +55,11 @@ describe('Logger', function(){
 
 		l.addAppender(consoleAppender, null, 5);
 
-		l.error("first error");
-		l.warn("second msg");
-		l.info("third msg");
-		l.debug("fourth msg");
-		l.trace("fifth msg");
+		l.error("error: should see me red");
+		l.warn("warn: should see me yellow");
+		l.info("info: should see me black");
+		l.debug("debug: should see me cyan");
+		l.trace("trace: should see me gray");
 	});
 
 	it('should handle multiple appenders', function(){
@@ -79,15 +79,15 @@ describe('Logger', function(){
 		l.addAppender(colorConsoleAppender, null, 5);
 		l.addAppender(testAppender, null, 5);
 
-		l.error("first error");
+		l.error("error: should see me twice: red and black");
 		testAppender.countEntries().should.be.eql(1);
-		l.warn("second msg");
+		l.warn("warn: should see me twice: yellow and black");
 		testAppender.countEntries().should.be.eql(2);
-		l.info("third msg");
+		l.info("info: should see me twice: black and black");
 		testAppender.countEntries().should.be.eql(3);
-		l.debug("fourth msg");
+		l.debug("debug: should see me twice: cyan and black");
 		testAppender.countEntries().should.be.eql(4);
-		l.trace("fifth msg");
+		l.trace("trace: should see me twice: gray and black");
 		testAppender.countEntries().should.be.eql(5);
 	});
 
@@ -118,15 +118,43 @@ describe('Logger', function(){
 
 		l.addAppender(testAppender, null, 5);
 
-		l.error("first error");
+		l.error("error: should see me before detach");
 		testAppender.countEntries().should.be.eql(1);
-		l.warn("second msg");
+		l.warn("warn: should see me after detach");
 		testAppender.countEntries().should.be.eql(2);
 
 		l.detachAndStopAllAppenders();
-		l.error("first error");
+		l.error("error: should NOT see me after detach");
 		testAppender.countEntries().should.be.eql(2);
-		l.warn("second msg");
+		l.warn("warn: should NOT see me after detach");
 		testAppender.countEntries().should.be.eql(2);
+	});
+
+	it('should support category prefix', function(){
+		var l1 = Logger.loggerFactory(3, "prefix1/logger");
+		var l2 = Logger.loggerFactory(3, "prefix2/logger");
+
+		l1.should.not.be.empty;
+		l2.should.not.be.empty;
+
+		var consoleAppender = new ColorConsoleAppender({
+			categoryPrefix : "prefix1"
+		});
+		consoleAppender.should.not.be.empty;
+
+		l1.addAppender(consoleAppender, null, 5);
+		l2.addAppender(consoleAppender, null, 5);
+
+		l1.error("prefix1 error: should see me red");
+		l1.warn("prefix1 warn: should see me yellow");
+		l1.info("prefix1 info: should see me black");
+		l1.debug("prefix1 debug: should see me cyan");
+		l1.trace("prefix1 trace: should see me gray");
+
+		l2.error("prefix2 error: should NOT see me red");
+		l2.warn("prefix2 warn: should NOT see me yellow");
+		l2.info("prefix2 info: should NOT see me black");
+		l2.debug("prefix2 debug: should NOT see me cyan");
+		l2.trace("prefix2 trace: should NOT see me gray");
 	});
 });
